@@ -1,5 +1,7 @@
 package com.github.uuidcode.core.entity;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,10 +13,11 @@ import lombok.experimental.Accessors;
 @Data(staticConstructor = "of")
 @Accessors(chain = true)
 @Entity
-public class Academy {
+public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long academyId;
-    private String name;
-    private String address;
+    private Long bookId;
+    private String title;
+    private Integer page;
+    private Date createAt;
 }

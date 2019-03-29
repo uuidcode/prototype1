@@ -12,7 +12,7 @@ import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
-import com.github.uuidcode.core.entity.EntityEntry;
+import com.github.uuidcode.core.entity.Book;
 import com.github.uuidcode.core.util.DefaultPhysicalNamingStrategy;
 
 @Configuration
@@ -25,7 +25,7 @@ public class JPAConfig {
         LocalContainerEntityManagerFactoryBean factoryBean
             = new LocalContainerEntityManagerFactoryBean();
         factoryBean.setDataSource(this.dataSource);
-        factoryBean.setPackagesToScan(EntityEntry.class.getPackage().getName());
+        factoryBean.setPackagesToScan(Book.class.getPackage().getName());
 
         JpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
         factoryBean.setJpaVendorAdapter(jpaVendorAdapter);

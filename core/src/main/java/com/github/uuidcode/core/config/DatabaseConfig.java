@@ -27,7 +27,7 @@ public class DatabaseConfig {
             .collect(Collectors.joining("&"));
 
         BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setUrl("jdbc:mysql://127.0.0.1:3306/prototype1?" + jdbcParameter);
+        dataSource.setUrl("jdbc:p6spy:mysql://127.0.0.1:3306/prototype1?" + jdbcParameter);
         dataSource.setUsername("root");
         dataSource.setPassword("rootroot");
         dataSource.setDriverClassName(Driver.class.getName());
