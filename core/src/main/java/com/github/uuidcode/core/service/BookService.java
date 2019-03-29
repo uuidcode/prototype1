@@ -2,6 +2,8 @@ package com.github.uuidcode.core.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 
@@ -11,10 +13,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.uuidcode.core.dao.BookDao;
+import com.github.uuidcode.core.entity.Author;
 import com.github.uuidcode.core.entity.Book;
+import com.github.uuidcode.core.entity.QBook;
+import com.github.uuidcode.core.util.CoreUtil;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
+import static com.github.uuidcode.core.entity.QAuthor.author;
 import static com.github.uuidcode.core.entity.QBook.book;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
 
 @Transactional
 @Service
@@ -24,6 +35,9 @@ public class BookService extends SimpleJpaRepository<Book, Long> {
 
     @Autowired
     private BookDao bookDao;
+
+    @Autowired
+    private AuthorService authorService;
 
     @Autowired
     public BookService(EntityManager entityManager) {
@@ -62,5 +76,36 @@ public class BookService extends SimpleJpaRepository<Book, Long> {
             .selectFrom(book)
             .where(book.title.eq(title))
             .fetch();
+    }
+
+    public Book selectById(Long bookId) {
+        List<Tuple> tupleList = this.queryFactory
+            .select(book, author)
+            .from(book)
+            .leftJoin(author).on(author.bookId.eq(book.bookId))
+            .where(book.bookId.eq(bookId))
+            .fetch();
+
+        if (CoreUtil.isEmpty(tupleList)) {
+            return null;
+        }
+
+        List<Author> authorList = tupleList.stream()
+            .map(tuple -> tuple.get(author))
+            .collect(toList());
+
+        return tupleList.get(0).get(book)
+            .setAuthorList(authorList);
+    }
+
+    public Book setAuthorList(Book book) {
+        List<Author> authorList = this.authorService.findByBookId(book.getBookId());
+        return book.setAuthorList(authorList);
+    }
+
+    public Book selectById2(Long bookId) {
+        return this.findById(bookId)
+            .map(this::setAuthorList)
+            .orElse(null);
     }
 }

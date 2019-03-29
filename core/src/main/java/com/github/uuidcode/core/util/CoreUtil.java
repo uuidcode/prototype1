@@ -1,15 +1,20 @@
 package com.github.uuidcode.core.util;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import javax.persistence.EntityManager;
+
 import org.hibernate.engine.jdbc.internal.BasicFormatterImpl;
+import org.springframework.data.jpa.repository.support.JpaMetamodelEntityInformation;
 
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.github.uuidcode.core.entity.Author;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
@@ -57,5 +62,11 @@ public class CoreUtil {
             .map(mapper)
             .filter(text -> Objects.equals(text, value))
             .isPresent();
+    }
+
+    public static boolean isEmpty(List list) {
+        return ofNullable(list)
+            .map(List::isEmpty)
+            .orElse(true);
     }
 }

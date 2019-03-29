@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.github.uuidcode.core.entity.Author;
 import com.github.uuidcode.core.entity.Book;
 import com.github.uuidcode.core.util.CoreUtil;
 
@@ -93,5 +94,29 @@ class BookServiceTest {
             .size();
 
         assertThat(list.size()).isEqualTo(size);
+    }
+
+    @Test
+    public void saveAuthor() {
+        Author author = Author.of().setBookId(1L).setName("hello");
+
+    }
+
+    @Test
+    public void selectById() {
+        Book book = this.bookService.selectById(1L);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug(">>> selectById book: {}", CoreUtil.toJson(book));
+        }
+    }
+
+    @Test
+    public void selectById2() {
+        Book book = this.bookService.selectById2(1L);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug(">>> selectById2 book: {}", CoreUtil.toJson(book));
+        }
     }
 }
