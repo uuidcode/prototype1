@@ -2,8 +2,6 @@ package com.github.uuidcode.core.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 
@@ -15,16 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.uuidcode.core.dao.BookDao;
 import com.github.uuidcode.core.entity.Author;
 import com.github.uuidcode.core.entity.Book;
-import com.github.uuidcode.core.entity.QBook;
 import com.github.uuidcode.core.util.CoreUtil;
 import com.querydsl.core.Tuple;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import static com.github.uuidcode.core.entity.QAuthor.author;
 import static com.github.uuidcode.core.entity.QBook.book;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 
 @Transactional
