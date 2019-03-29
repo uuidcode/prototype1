@@ -9,4 +9,6 @@ import com.github.uuidcode.core.entity.Book;
 @Mapper
 public interface BookDao {
     List<Book> findAll2();
+    int saveSuccess(Book book);
+    int saveFail(Book book);
 }

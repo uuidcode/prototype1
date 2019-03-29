@@ -19,5 +19,5 @@ public class Book {
     private Long bookId;
     private String title;
     private Integer page;
-    private Date createAt;
+    private Date createdAt;
 }

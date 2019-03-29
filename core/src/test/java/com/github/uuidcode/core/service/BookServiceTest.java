@@ -2,6 +2,7 @@ package com.github.uuidcode.core.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,6 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.github.uuidcode.core.entity.Book;
 import com.github.uuidcode.core.util.CoreUtil;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @SpringBootTest
@@ -25,17 +27,43 @@ class BookServiceTest {
 
     @Test
     public void save() {
-        Book book = Book.of().setTitle("1").setPage(2).setCreateAt(new Date());
+        Book book = Book.of().setTitle("1").setPage(2).setCreatedAt(new Date());
         this.bookService.save(book);
 
-        if (logger.isDebugEnabled()) {
-            logger.debug(">>> save book: {}", CoreUtil.toJson(book));
+        assertThat(book.getBookId()).isNotNull();
+        assertThat(book.getTitle()).isEqualTo("1");
+        assertThat(book.getCreatedAt()).isAfterOrEqualsTo(book.getCreatedAt());
+    }
+
+    @Test
+    public void transactionSuccess() {
+        this.transaction(() -> this.bookService.transactionSuccess(), 2);
+    }
+
+    @Test
+    public void transactionFail() {
+        this.transaction(() -> this.bookService.transactionFail(), 0);
+    }
+
+    public void transaction(Runnable runnable, int saveCount) {
+        long count = this.bookService.count();
+
+        try {
+            runnable.run();
+        } catch (Throwable t) {
+            if (logger.isErrorEnabled()) {
+                logger.error(">>> transaction error", t);
+            }
         }
+
+        assertThat(this.bookService.count()).isEqualTo(count + saveCount);
     }
 
     @Test
     public void findAll() {
         List<Book> list = this.bookService.findAll();
+
+        assertThat(list.size()).isGreaterThan(0);
 
         if (logger.isDebugEnabled()) {
             logger.debug(">>> findAll list: {}", CoreUtil.toJson(list));
@@ -46,6 +74,8 @@ class BookServiceTest {
     public void findAll2() {
         List<Book> list = this.bookService.findAll2();
 
+        assertThat(list.size()).isGreaterThan(0);
+
         if (logger.isDebugEnabled()) {
             logger.debug(">>> findAll list: {}", CoreUtil.toJson(list));
         }
@@ -55,8 +85,13 @@ class BookServiceTest {
     public void findByTitle() {
         List<Book> list = this.bookService.findByTitle("1");
 
-        if (logger.isDebugEnabled()) {
-            logger.debug(">>> findByTitle list: {}", CoreUtil.toJson(list));
-        }
+        assertThat(list.size()).isGreaterThan(0);
+
+        int size = list.stream()
+            .filter(CoreUtil.equals(Book::getTitle, "1"))
+            .collect(Collectors.toList())
+            .size();
+
+        assertThat(list.size()).isEqualTo(size);
     }
 }

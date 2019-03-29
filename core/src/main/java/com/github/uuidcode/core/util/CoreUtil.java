@@ -1,7 +1,9 @@
 package com.github.uuidcode.core.util;
 
 import java.text.SimpleDateFormat;
+import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.hibernate.engine.jdbc.internal.BasicFormatterImpl;
 
@@ -12,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static java.util.Optional.ofNullable;
 
 public class CoreUtil {
     public static ObjectMapper objectMapper;
@@ -46,9 +49,13 @@ public class CoreUtil {
     }
 
     public static String getFormattedSQL(String sql) {
-        String formattedSql = new BasicFormatterImpl().format(sql);
-        formattedSql = formattedSql.replaceAll("\\s*LIMIT", " LIMIT");
-        formattedSql = formattedSql.replaceAll("LIMIT\\s*(\\d),\\s*(\\d)", " LIMIT $1, $2");
-        return formattedSql;
+        return new BasicFormatterImpl().format(sql);
+    }
+
+    public static <T> Predicate<T> equals(Function<T, String> mapper, String value) {
+        return t -> ofNullable(t)
+            .map(mapper)
+            .filter(text -> Objects.equals(text, value))
+            .isPresent();
     }
 }
