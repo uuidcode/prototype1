@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %c.%M\(%F:%L\) - %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.hibernate.SQL" level="DEBUG" />
+    <logger name="org.hibernate.tool.hbm2ddl" level="DEBUG"/>
+    <logger name="org.hibernate.type" level="TRACE" />
+    <logger name="org.hibernate.stat" level="DEBUG" />
+    <logger name="org.hibernate.type.BasicTypeRegistry" level="WARN" />
+
+    <root level="DEBUG">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>
