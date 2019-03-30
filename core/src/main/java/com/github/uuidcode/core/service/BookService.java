@@ -6,7 +6,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +22,7 @@ import static java.util.stream.Collectors.toList;
 
 @Transactional
 @Service
-public class BookService extends SimpleJpaRepository<Book, Long> {
+public class BookService extends QuerydslJpaRepository<Book, Long> {
     @Autowired
     private JPAQueryFactory queryFactory;
 
