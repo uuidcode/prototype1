@@ -2,6 +2,7 @@ package com.github.uuidcode.core.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 
@@ -12,13 +13,18 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.uuidcode.core.dao.BookDao;
 import com.github.uuidcode.core.entity.Author;
 import com.github.uuidcode.core.entity.Book;
+import com.github.uuidcode.core.entity.Keyword;
+import com.github.uuidcode.core.entity.QKeyword;
+import com.github.uuidcode.core.entity.Relation;
 import com.github.uuidcode.core.util.CoreUtil;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import static com.github.uuidcode.core.entity.QAuthor.author;
 import static com.github.uuidcode.core.entity.QBook.book;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 
 @Transactional
@@ -32,6 +38,9 @@ public class BookService extends QuerydslJpaRepository<Book, Long> {
 
     @Autowired
     private AuthorService authorService;
+
+    @Autowired
+    private KeywordService keywordService;
 
     @Autowired
     public BookService(EntityManager entityManager) {
@@ -94,13 +103,34 @@ public class BookService extends QuerydslJpaRepository<Book, Long> {
 
     public Book setAuthorList(Book book) {
         BooleanExpression predicate = author.bookId.eq(book.getBookId());
-        List<Author> authorList = this.authorService.findAll(predicate);
+        OrderSpecifier<Long> orderSpecifier = author.authorId.desc();
+        List<Author> authorList = this.authorService.findAll(predicate, orderSpecifier);
         return book.setAuthorList(authorList);
+    }
+
+    public Book setKeywordList(Book book) {
+        BooleanExpression predicate = QKeyword.keyword.bookId.eq(book.getBookId());
+        List<Keyword> keywordList = this.keywordService.findAll(predicate);
+        return book.setKeywordsList(keywordList);
     }
 
     public Book selectById2(Long bookId) {
         return this.findById(bookId)
             .map(this::setAuthorList)
             .orElse(null);
+    }
+
+    public Book findById(Long bookId, Relation relation) {
+        Optional<Book> bookOptional = this.findById(bookId);
+
+        if (Relation.hasAuthorList(relation)) {
+            bookOptional = bookOptional.map(this::setAuthorList);
+        }
+
+        if (Relation.hasKeywordList(relation)) {
+            bookOptional = bookOptional.map(this::setKeywordList);
+        }
+
+        return bookOptional.orElse(null);
     }
 }

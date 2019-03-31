@@ -13,8 +13,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.github.uuidcode.core.entity.Author;
 import com.github.uuidcode.core.entity.Book;
+import com.github.uuidcode.core.entity.Relation;
 import com.github.uuidcode.core.util.CoreUtil;
 
+import static com.github.uuidcode.core.entity.Relation.Type.AUTHOR_LIST;
+import static com.github.uuidcode.core.entity.Relation.Type.KEYWORD_LIST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -117,6 +120,31 @@ class BookServiceTest {
 
         if (logger.isDebugEnabled()) {
             logger.debug(">>> selectById2 book: {}", CoreUtil.toJson(book));
+        }
+    }
+
+    @Test
+    public void findByIdRelation1() {
+        Relation relation = Relation.of()
+            .add(AUTHOR_LIST)
+            .add(KEYWORD_LIST);
+
+        Book book = this.bookService.findById(1L, relation);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug(">>> findByIdRelation1 book: {}", CoreUtil.toJson(book));
+        }
+    }
+
+    @Test
+    public void findByIdRelation2() {
+        Relation relation = Relation.of()
+            .add(KEYWORD_LIST);
+
+        Book book = this.bookService.findById(1L, relation);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug(">>> findByIdRelation2 book: {}", CoreUtil.toJson(book));
         }
     }
 }
