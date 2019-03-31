@@ -14,6 +14,7 @@ import com.github.uuidcode.core.entity.Author;
 import com.github.uuidcode.core.entity.Book;
 import com.github.uuidcode.core.util.CoreUtil;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import static com.github.uuidcode.core.entity.QAuthor.author;
@@ -92,7 +93,8 @@ public class BookService extends QuerydslJpaRepository<Book, Long> {
     }
 
     public Book setAuthorList(Book book) {
-        List<Author> authorList = this.authorService.findByBookId(book.getBookId());
+        BooleanExpression predicate = author.bookId.eq(book.getBookId());
+        List<Author> authorList = this.authorService.findAll(predicate);
         return book.setAuthorList(authorList);
     }
 
