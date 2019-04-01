@@ -3,6 +3,8 @@ package com.github.uuidcode.core.util;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -81,5 +83,13 @@ public class CoreUtil {
         return ofNullable(list)
             .map(List::isEmpty)
             .orElse(true);
+    }
+
+    public static String createUUID() {
+        return UUID.randomUUID().toString().replace("-", "");
+    }
+
+    public static int getRandomInt() {
+        return new Random().nextInt();
     }
 }

@@ -147,4 +147,28 @@ class BookServiceTest {
             logger.debug(">>> findByIdRelation2 book: {}", CoreUtil.toJson(book));
         }
     }
+
+    @Test
+    public void update() {
+        Book book = Book.of()
+            .setTitle("20190401")
+            .setPage(100)
+            .setCreatedAt(new Date());
+
+        book = this.bookService.save(book);
+
+        this.bookService.findById(book.getBookId())
+            .ifPresent(b -> this.bookService.save(b.setPage(200)));
+    }
+
+    @Test
+    public void saveDummy() {
+        for (int i = 0; i < 100; i++) {
+            Book book = Book.of()
+                .setTitle(CoreUtil.createUUID())
+                .setPage(CoreUtil.getRandomInt());
+
+            this.bookService.save(book);
+        }
+    }
 }
