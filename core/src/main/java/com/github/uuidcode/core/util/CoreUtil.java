@@ -6,22 +6,23 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import javax.persistence.EntityManager;
-
 import org.hibernate.engine.jdbc.internal.BasicFormatterImpl;
-import org.springframework.data.jpa.repository.support.JpaMetamodelEntityInformation;
+import org.slf4j.Logger;
 
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.github.uuidcode.core.entity.Author;
+import com.github.uuidcode.core.config.StringTrimModule;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static java.util.Optional.ofNullable;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class CoreUtil {
+    protected static Logger logger = getLogger(CoreUtil.class);
+
     public static ObjectMapper objectMapper;
     public static ObjectWriter objectWriter;
 
@@ -31,9 +32,21 @@ public class CoreUtil {
         objectMapper.setSerializationInclusion(NON_NULL);
         objectMapper.setVisibility(PropertyAccessor.ALL, NONE);
         objectMapper.setVisibility(PropertyAccessor.FIELD, ANY);
+        objectMapper.registerModule(StringTrimModule.of());
         objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
     }
 
+    public static <T> T parseJson(String json, Class<T> valueType) {
+        try {
+            return objectMapper.readValue(json, valueType);
+        } catch (Throwable t) {
+            if (logger.isErrorEnabled()) {
+                logger.error(">>> error CoreUtil parseJson", t);
+            }
+        }
+
+        return null;
+    }
 
     public static String toJson(Object object) {
         return unchecked(objectWriter::writeValueAsString).apply(object);

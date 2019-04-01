@@ -9,5 +9,6 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class Project {
     private Long id;
-    private Date CreateAt;
+    private String name;
+    private Date createAt;
 }
